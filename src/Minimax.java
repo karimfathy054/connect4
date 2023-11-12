@@ -1,15 +1,18 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class Minimax<T> {
 
     int depth;
     T currentState;
     boolean isMaximizer;
+    HashMap<T,T> parentMap;
 
     public Minimax(int depth, T currentState, boolean isMaximizer){
         this.depth = depth;
         this.currentState = currentState;
         this.isMaximizer = isMaximizer;
+        this.parentMap = new HashMap<>();
     }
 
     public abstract boolean isTerminal(T state);
@@ -32,13 +35,19 @@ public abstract class Minimax<T> {
         if(isMaximizer){
             int maxValue = Integer.MIN_VALUE;
             for(T nextState: nextStates(state)){
-                maxValue = Math.max(maxValue, minimaxHelper(nextState, false, depth-1));
+                if(maxValue < minimaxHelper(nextState, false, depth-1)){
+                    maxValue = minimaxHelper(nextState, false, depth-1);
+                    parentMap.put(state,nextState);
+                }
             }
             return maxValue;
         }else{
             int minValue = Integer.MAX_VALUE;
             for(T nextState: nextStates(state)){
-                minValue = Math.min(minValue, minimaxHelper(nextState, true, depth-1));
+                if(minValue > minimaxHelper(nextState, true, depth-1)){
+                    minValue = minimaxHelper(nextState, true, depth-1);
+                    parentMap.put(state,nextState);
+                }
             }
             return minValue;
         }
@@ -61,7 +70,10 @@ public abstract class Minimax<T> {
 
             for(T nextState: nextStates(state)){
                 int val = pruningHelper(nextState, false, depth-1, alpha, beta);
-                maxVal = Math.max(maxVal, val);
+                if(maxVal < val){
+                    maxVal = val;
+                    parentMap.put(state,nextState);
+                }
                 alpha = Math.max(alpha, val);
 
                 if(alpha >= beta){break;}
@@ -71,7 +83,10 @@ public abstract class Minimax<T> {
             int minVal = Integer.MAX_VALUE;
             for(T nextState: nextStates(state)){
                 int val = pruningHelper(nextState, true, depth-1, alpha, beta);
-                minVal = Math.min(minVal, val);
+                if(minVal > val){
+                    minVal = val;
+                    parentMap.put(state,nextState);
+                }
                 beta = Math.min(beta, val);
                 if(beta <= alpha){break;}
             }
@@ -88,6 +103,8 @@ public abstract class Minimax<T> {
                 Integer.MAX_VALUE
         );
     }
+    // hashmap ( state --> state )
+    public abstract void Play();
 
 }
 
