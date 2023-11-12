@@ -19,7 +19,7 @@ public class State implements Cloneable {
         this.row4 = 0;
         this.row5 = 0;
         this.row6 = 0;
-        this.player = 1;
+        this.player = 2;
     }
 
 
@@ -55,7 +55,7 @@ public class State implements Cloneable {
         return true;
     }
 
-    public static int getDigit(int number, int position) {
+    public int getDigit(int number, int position) {
         // Ensure position is non-negative
         position = Math.max(0, position);
 
@@ -75,94 +75,107 @@ public class State implements Cloneable {
         return number;
     }
 
-    public ArrayList<State> getNextStates() throws CloneNotSupportedException {
+    public ArrayList<State> getNextStates() {
         int[] rows = {row1,row2,row3,row4,row5,row6};
-        ArrayList<State> nextStates = new ArrayList<State>();
+        ArrayList<State> nextStates = new ArrayList<>();
         for (int i = 0; i < 7; i++) {
-            State successor = (State) this.clone();
-            successor.playturn(i+1);
-            nextStates.add(successor);
+            State successor = null;
+            try {
+                successor = (State) this.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+            if(successor.playturn(i+1)) {
+                nextStates.add(successor);
+            }
         }
         return nextStates;
     }
 
-    public int getScore(int n){
+    private int scoreHelper(int[] arr,int n,int player){
+        // [ 1 , 1 , 1 , 1] --> 1
+        // cnt = 4
+        // open = 0
+
+        // [ 1 , 0 , 1 , 1 ]
+        // cnt = 3
+        // open = 1
+
+        // [ 0 , 1 , 0 , 1 ]
+        // cnt = 2
+        // open = 2
+        int cnt = 0, open = 0;
+        for(int i=0 ; i<4 ; i++){
+            if(arr[i]==player)cnt++;
+            else if(arr[i]==0)open++;
+        }
+        if((open == 4-n) && (cnt == n))return 1;
+        return 0;
+    }
+    public int getScore(int n,int player){
         int[] rows = {row1,row2,row3,row4,row5,row6};
         int score=0;
         for(int i=0 ; i<6 ; i++){
-            for(int j=1 ; j<=6 ; j++){
-                int cnt=0,l=j,k=n;
-                while(k>0 && l<=7){
-                    if(getDigit(rows[i],l)==player){
-                        cnt++;
-                    }
-                    k--;
+            for(int j=1 ; j<=4 ; j++){
+                int l=j,k=0;
+                int[] arr = new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[i],l);
                     l++;
                 }
-                if(cnt==n)
-                    score++;
-            }
-        }
-        for(int i=1 ; i<=7 ; i++){
-            for(int j=0 ; j<=4 ; j++){
-                int cnt=0,l=j,k=n;
-                while(k>0 && l<=5){
-                    if(getDigit(rows[l],i)==player)cnt++;
-                    k--;
-                    l++;
-                }
-                if(cnt==n) score++;
+                score += scoreHelper(arr,n,player);
             }
         }
 
-        for(int i=5 ; i>=1 ; i--){
-            for(int j=1 ; j<=6 ; j++){
-                int cnt=0 , l=i , r=j,k=n;
-                while(k>0 && l>=0 && r<=7){
-                    if(getDigit(rows[l],r)==player){
-                        cnt++;
-                    }
+        for(int i=1 ; i<=7 ; i++){
+            for(int j=0 ; j<=2 ; j++){
+                int l=j,k=0;
+                int[] arr =new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[l],i);
+                    l++;
+                }
+                score += scoreHelper(arr,n,player);
+            }
+        }
+
+        for(int i=5 ; i>=3 ; i--){
+            for(int j=1 ; j<=4 ; j++){
+                int  l=i , r=j,k=0;
+                int[] arr =new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[l],r);
                     l--;
                     r++;
-                    k--;
                 }
-                if(cnt==n)
-                    score++;
+                score += scoreHelper(arr,n,player);
             }
         }
 
-        for(int i=5 ; i>=1 ; i--){
-            for(int j=7 ; j>=2 ; j--){
-                int cnt=0,l=i,r=j,k=n;
-                while(k>0 && l>=0 && r>=1){
-                    if(getDigit(rows[l],r)==player){
-                        cnt++;
-                    }
+        for(int i=5 ; i>=3 ; i--){
+            for(int j=7 ; j>=4 ; j--){
+                int l=i,r=j,k=0;
+                int[] arr=new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[l],r);
                     l--;
                     r--;
-                    k--;
                 }
-                if(cnt==n)
-                    score++;
+                score += scoreHelper(arr,n,player);
             }
         }
 
         return score;
     }
 
-
-
-    @Override
-    public String toString() {
-        return "State{\n" +
-                ", row6=" + row6 +"\n"+
-                ", row5=" + row5 +"\n"+
-                ", row4=" + row4 +"\n"+
-                ", row3=" + row3 +"\n"+
-                ", row2=" + row2 +"\n"+
-                ", row1=" + row1 +"\n"+
-                ", player=" + player +
-                '}';
+    public void printGrid() {
+        int[] rows = {row1,row2,row3,row4,row5,row6};
+        for(int i=5 ; i>=0 ; i--){
+            for(int j=1 ; j<=7 ; j++){
+                System.out.print(getDigit(rows[i],j) +" ");
+            }
+            System.out.println("\n");
+        }
     }
 
 
@@ -181,12 +194,11 @@ public class State implements Cloneable {
         s.playturn(2); // 1
         s.playturn(5); // 2
         s.playturn(2); // 1
+        System.out.println(s.getScore(4,1));
         System.out.println(s);
-        System.out.println(s.getScore(4));
         ArrayList<State> neigh = s.getNextStates();
         for(State x : neigh){
             System.out.println(x);
-            System.out.println(x.getScore(4));
         }
     }
 }
