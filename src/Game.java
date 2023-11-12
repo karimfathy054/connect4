@@ -52,7 +52,7 @@ public class Game {
 
         public ArrayList<State> getNextStates(){
             char piece = this.human? 'r':'y';
-            ArrayList<State> nextStates = new ArrayList<>();
+            ArrayList<State> nextStates = new ArrayList<State>();
             for (int i = 0; i < board[0].length; i++) {
                 if(board[0][i] !='-') continue;
                 int last=5;

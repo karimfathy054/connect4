@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class State implements Cloneable {
 
@@ -76,22 +77,77 @@ public class State implements Cloneable {
 
     public ArrayList<State> getNextStates() throws CloneNotSupportedException {
         int[] rows = {row1,row2,row3,row4,row5,row6};
-        ArrayList<State> nextStates = new ArrayList<>();
+        ArrayList<State> nextStates = new ArrayList<State>();
         for (int i = 0; i < 7; i++) {
-            if(getDigit(rows[5],i) !=0) continue;
-            int last=5;
-            for (int j = 0; j < rows.length; j++) {
-                if(getDigit(rows[j],i)==0) continue;
-                last = j-1;
-                break;
-            }
             State successor = (State) this.clone();
-
-            successor.row1=setDigit(successor.row1,i,player);
-
+            successor.playturn(i+1);
             nextStates.add(successor);
         }
         return nextStates;
+    }
+
+    public int getScore(){
+        int[] rows = {row1,row2,row3,row4,row5,row6};
+        int score=0;
+        for(int i=0 ; i<6 ; i++){
+            for(int j=1 ; j<=4 ; j++){
+                int cnt=0,l=j,k=4;
+                while(k>0){
+                    if(getDigit(rows[i],l)==player){
+                        cnt++;
+                    }
+                    k--;
+                    l++;
+                }
+                if(cnt==4)
+                    score++;
+            }
+        }
+        for(int i=1 ; i<=7 ; i++){
+            for(int j=0 ; j<=2 ; j++){
+                int cnt=0,l=j,k=4;
+                while(k>0){
+                    if(getDigit(rows[l],i)==player)cnt++;
+                    k--;
+                    l++;
+                }
+                if(cnt==4) score++;
+            }
+        }
+
+        for(int i=0 ; i<=2 ; i++){
+            for(int j=1 ; j<=4 ; j++){
+                int cnt=0 , l=i , r=j,k=4;
+                while(k>0){
+                    if(getDigit(rows[l],r)==player){
+                        cnt++;
+                    }
+                    l++;
+                    r++;
+                    k--;
+                }
+                if(cnt==4)
+                    score++;
+            }
+        }
+
+        for(int i=0 ; i<=2 ; i++){
+            for(int j=7 ; j>=4 ; j--){
+                int cnt=0,l=i,r=j,k=4;
+                while(k>0){
+                    if(getDigit(rows[l],r)==player){
+                        cnt++;
+                    }
+                    l++;
+                    r--;
+                    k--;
+                }
+                if(cnt==4)
+                    score++;
+            }
+        }
+
+        return score;
     }
 
 
@@ -113,12 +169,23 @@ public class State implements Cloneable {
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException {
         State s = new State();
         System.out.println(s);
-        s.playturn(5);
-        s.playturn(5);
+        s.playturn(5); // 1
+        s.playturn(5); // 2
+        s.playturn(4); // 1
+        s.playturn(5); // 2
+        s.playturn(3); // 1
+        s.playturn(5); // 2
+        s.playturn(2); // 1
+        s.playturn(5); // 2
+        s.playturn(2); // 1
         System.out.println(s);
-        System.out.println(getDigit(s.row1,5));
+        System.out.println(s.getScore());
+        ArrayList<State> neigh = s.getNextStates();
+        for(State x : neigh){
+            System.out.println(x);
+        }
     }
 }
