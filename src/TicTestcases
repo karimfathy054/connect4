@@ -1,0 +1,12 @@
+new char[]{'x', '-', '-'},
+new char[]{'-', 'x', 'o'},
+new char[]{'x', '-', 'o'}
+
+new char[]{'-', '-', '-'},
+new char[]{'-', '-', '-'},
+new char[]{'-', '-', '-'}
+
+new char[]{'x', 'x', 'o'},
+new char[]{'-', 'x', '-'},
+new char[]{'-', 'o', 'o'}
+isMaximizer = false
