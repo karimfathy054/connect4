@@ -86,63 +86,63 @@ public class State implements Cloneable {
         return nextStates;
     }
 
-    public int getScore(){
+    public int getScore(int n){
         int[] rows = {row1,row2,row3,row4,row5,row6};
         int score=0;
         for(int i=0 ; i<6 ; i++){
-            for(int j=1 ; j<=4 ; j++){
-                int cnt=0,l=j,k=4;
-                while(k>0){
+            for(int j=1 ; j<=6 ; j++){
+                int cnt=0,l=j,k=n;
+                while(k>0 && l<=7){
                     if(getDigit(rows[i],l)==player){
                         cnt++;
                     }
                     k--;
                     l++;
                 }
-                if(cnt==4)
+                if(cnt==n)
                     score++;
             }
         }
         for(int i=1 ; i<=7 ; i++){
-            for(int j=0 ; j<=2 ; j++){
-                int cnt=0,l=j,k=4;
-                while(k>0){
+            for(int j=0 ; j<=4 ; j++){
+                int cnt=0,l=j,k=n;
+                while(k>0 && l<=5){
                     if(getDigit(rows[l],i)==player)cnt++;
                     k--;
                     l++;
                 }
-                if(cnt==4) score++;
+                if(cnt==n) score++;
             }
         }
 
-        for(int i=0 ; i<=2 ; i++){
-            for(int j=1 ; j<=4 ; j++){
-                int cnt=0 , l=i , r=j,k=4;
-                while(k>0){
+        for(int i=5 ; i>=1 ; i--){
+            for(int j=1 ; j<=6 ; j++){
+                int cnt=0 , l=i , r=j,k=n;
+                while(k>0 && l>=0 && r<=7){
                     if(getDigit(rows[l],r)==player){
                         cnt++;
                     }
-                    l++;
+                    l--;
                     r++;
                     k--;
                 }
-                if(cnt==4)
+                if(cnt==n)
                     score++;
             }
         }
 
-        for(int i=0 ; i<=2 ; i++){
-            for(int j=7 ; j>=4 ; j--){
-                int cnt=0,l=i,r=j,k=4;
-                while(k>0){
+        for(int i=5 ; i>=1 ; i--){
+            for(int j=7 ; j>=2 ; j--){
+                int cnt=0,l=i,r=j,k=n;
+                while(k>0 && l>=0 && r>=1){
                     if(getDigit(rows[l],r)==player){
                         cnt++;
                     }
-                    l++;
+                    l--;
                     r--;
                     k--;
                 }
-                if(cnt==4)
+                if(cnt==n)
                     score++;
             }
         }
@@ -182,10 +182,11 @@ public class State implements Cloneable {
         s.playturn(5); // 2
         s.playturn(2); // 1
         System.out.println(s);
-        System.out.println(s.getScore());
+        System.out.println(s.getScore(4));
         ArrayList<State> neigh = s.getNextStates();
         for(State x : neigh){
             System.out.println(x);
+            System.out.println(x.getScore(4));
         }
     }
 }
