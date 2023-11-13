@@ -1,3 +1,7 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -54,6 +58,7 @@ public class State implements Cloneable {
         }
         return true;
     }
+
 
     public int getDigit(int number, int position) {
         // Ensure position is non-negative
@@ -169,12 +174,20 @@ public class State implements Cloneable {
     }
 
     public void printGrid() {
-        int[] rows = {row1,row2,row3,row4,row5,row6};
-        for(int i=5 ; i>=0 ; i--){
-            for(int j=1 ; j<=7 ; j++){
-                System.out.print(getDigit(rows[i],j) +" ");
+        File f = new File("src/connect4");
+        try {
+            FileWriter fw = new FileWriter(f);
+            BufferedWriter bw = new BufferedWriter(fw);
+            int[] rows = {row1,row2,row3,row4,row5,row6};
+            for(int i=5 ; i>=0 ; i--){
+                for(int j=1 ; j<=7 ; j++){
+                 bw.write(getDigit(rows[i],j) +" ");
+                }
+                bw.newLine();
             }
-            System.out.println("\n");
+            bw.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
