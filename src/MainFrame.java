@@ -8,28 +8,35 @@ import java.util.Scanner;
 
 public class MainFrame {
 
+
+    //game global values
     Boolean HumanFirst = true;
-    State state ;
-
     Boolean withPrunning = false;
-
+    State state ;
     int depth;
+    //---------------------------------------------------------------//
 
+    //game window
     static JFrame frame = new JFrame("Connect4");
-//    static JPanel scores = new JPanel();
+    //game board
     static JPanel board = new JPanel(new GridLayout(6,7));
-    static JPanel inputs = new JPanel();
-
     static JButton[][] cells =new JButton[6][7];
-
+    //--------------------------------------------------------------//
+    //input buttons
+    static JPanel inputs = new JPanel(new FlowLayout(FlowLayout.LEFT,15,1));
     static JButton[] input = new JButton[7];
-
-    static JTextField textDepth = new JTextField("3");
-
-    static JPanel jj = new JPanel();
+    //--------------------------------------------------------//
+    //other controls
+    static JPanel otherControls = new JPanel();
     static JButton startAI = new JButton("start AI");
 
-    static JCheckBox prunning = new JCheckBox();
+    static JPanel depthPanel = new JPanel();
+    static JLabel depthLabel = new JLabel("Depth (K):");
+    static JTextField textDepth = new JTextField("5");
+    static JCheckBox pruning = new JCheckBox();
+
+    //-----------------------------------------------------//
+
 
     public MainFrame() {
         this.state = new State();
@@ -39,7 +46,6 @@ public class MainFrame {
                 cells[i][j] = new JButton();
                 cells[i][j].setBackground(Color.YELLOW);
                 cells[i][j].setSize(100,100);
-
                 board.add(cells[i][j]);
             }
         }
@@ -48,61 +54,15 @@ public class MainFrame {
             input[i] = new JButton("row"+(i+1));
             int finalI = i;
             input[i].addActionListener(e -> {
-
                 //call play at row finalI
-                state.playturn(finalI+1);
-                state.printGrid();
-                guiPrint();
-                this.depth = Integer.parseInt(textDepth.getText());
-                this.withPrunning = prunning.isSelected();
-                Connect4MiniMax game;
-    //                    if (this.state.player == 1){
-                game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
-
-                if(game.isTerminal(state)){
-                    int score = game.estimate(state);
-                    System.out.println(score);
-                    if(score == 10000){
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "Player 1 wins!!!"
-                        );
-                    }else if(score == -10000){
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "Player 2 wins!!!"
-                        );
-                    }
-                    return;
-                }
-
-                if(state.getDigit(state.row6, finalI+1) != 0){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Column full!!!!!"
-                    );
-                    return;
-                }
-
-                if(withPrunning){
-                    System.out.println("with prunning " + game.minimaxWithPruning());
-                }
-                else {
-                    System.out.println("without prunning "+game.minimax());
-                }
-                this.state = game.parentMap.get(state)!=null? game.parentMap.get(state):this.state;
-
-                state.printGrid();
-    //                    }
-                //read the file and rename
-                guiPrint();
-        });
+                playColumnAsHuman(finalI);
+            });
             inputs.add(input[i]);
         }
         startAI.addActionListener(e->{
             this.HumanFirst = false;
             this.depth = Integer.parseInt(textDepth.getText());
-            this.withPrunning = prunning.isSelected();
+            this.withPrunning = pruning.isSelected();
             Connect4MiniMax game;
             game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
             if(withPrunning){
@@ -114,22 +74,71 @@ public class MainFrame {
             this.state = game.parentMap.get(state);
             state.printGrid();
             guiPrint();
+            startAI.setEnabled(false);
         });
-        jj.setLayout(new BoxLayout(jj,BoxLayout.Y_AXIS));
-        jj.add(startAI);
-        jj.add(textDepth);
-        jj.add(new JLabel("with Prunning:"));
-        jj.add(prunning);
-        textDepth.setBackground(Color.CYAN);
+        otherControls.setLayout(new BoxLayout(otherControls,BoxLayout.Y_AXIS));
+        otherControls.add(startAI);
+        depthPanel.add(depthLabel);
+        depthPanel.add(textDepth);
+        otherControls.add(depthPanel);
+        JPanel p = new JPanel();
+        p.add(new JLabel("with Prunning:"));
+        p.add(pruning);
+        otherControls.add(p);
+
         frame.setLayout(new BorderLayout());
-//        frame.add(textDepth,BorderLayout.NORTH);
-//        frame.add(scores,BorderLayout.NORTH);
         frame.add(board,BorderLayout.CENTER);
         frame.add(inputs,BorderLayout.SOUTH);
-        frame.add(jj,BorderLayout.EAST);
-        frame.setSize(600,600);
+        frame.add(otherControls,BorderLayout.EAST);
+        frame.setSize(700,700);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
+    private void playColumnAsHuman(int finalI) {
+        state.playturn(finalI +1);
+        state.printGrid();
+        guiPrint();
+        this.depth = Integer.parseInt(textDepth.getText());
+        this.withPrunning = pruning.isSelected();
+        Connect4MiniMax game;
+        game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
+        if(game.isTerminal(state)){
+            displayWinner(game);
+            return;
+        }
+        if(state.getDigit(state.row6, finalI +1) != 0){
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Column full!!!!!"
+            );
+            return;
+        }
+        if(withPrunning){
+            System.out.println("with prunning " + game.minimaxWithPruning());
+        }
+        else {
+            System.out.println("without prunning "+game.minimax());
+        }
+        this.state = game.parentMap.get(state)!=null? game.parentMap.get(state):this.state;
+        state.printGrid();
+        guiPrint();
+    }
+
+    private void displayWinner(Connect4MiniMax game) {
+        int score = game.estimate(state);
+        System.out.println(score);
+        if(score == 10000){
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Player 1 wins!!!"
+            );
+        }else if(score == -10000){
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Player 2 wins!!!"
+            );
+        }
     }
 
     static void guiPrint(){

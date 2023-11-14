@@ -66,7 +66,7 @@ public class Connect4MiniMax extends Minimax<State>{
         return score;
     }
     @Override
-    public int estimate(State state) {
+    public int estimate(State state) {//FIXME: need to be revised as the heuristic maximizes player 2 only
         int heuristic = 0;
         if(isTerminal(state)){
             if(state.getScore(4,2)>state.getScore(4,1))return 10000;
