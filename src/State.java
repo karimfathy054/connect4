@@ -191,6 +191,18 @@ public class State implements Cloneable {
         }
     }
 
+    public String  printGridTree() {
+        String tree="";
+        int[] rows = {row1,row2,row3,row4,row5,row6};
+        for(int i=5 ; i>=0 ; i--){
+            for(int j=1 ; j<=7 ; j++){
+                tree += (getDigit(rows[i],j) +" ");
+            }
+            tree += "\n";
+        }
+        return tree;
+    }
+
 
 
 

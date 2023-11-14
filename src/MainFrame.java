@@ -1,8 +1,12 @@
+import com.sun.source.tree.Tree;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 
@@ -30,6 +34,8 @@ public class MainFrame {
     static JButton startAI = new JButton("start AI");
 
     static JCheckBox prunning = new JCheckBox();
+
+    TreeDemo treeDemo ;
 
     public MainFrame() {
         this.state = new State();
@@ -90,11 +96,12 @@ public class MainFrame {
                 else {
                     System.out.println("without prunning "+game.minimax());
                 }
+                if(this.treeDemo != null){
+                    this.treeDemo.dispose();
+                }
+                this.treeDemo = new TreeDemo(game.tree,game.explored,Minimax.hasher,this.state);
                 this.state = game.parentMap.get(state)!=null? game.parentMap.get(state):this.state;
-
                 state.printGrid();
-    //                    }
-                //read the file and rename
                 guiPrint();
         });
             inputs.add(input[i]);
@@ -131,6 +138,7 @@ public class MainFrame {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
+
 
     static void guiPrint(){
         File f = new File("src/connect4");
