@@ -8,7 +8,14 @@ public abstract class Minimax<T> {
     boolean isMaximizer;
     HashMap<T,T> parentMap;
 
-    public Minimax(int depth, T currentState, boolean isMaximizer){
+    static Hasher hasher;
+
+    HashMap<Long, Integer> explored;
+
+
+    public Minimax(int depth, T currentState, boolean isMaximizer, Hasher hasher){
+        this.explored = new HashMap<>();
+        Minimax.hasher = hasher;
         this.depth = depth;
         this.currentState = currentState;
         this.isMaximizer = isMaximizer;
@@ -25,30 +32,46 @@ public abstract class Minimax<T> {
     */
     public abstract ArrayList<T> nextStates(T state);
 
+    private Integer checkIfExplored(T state){
+        return explored.get(Minimax.hasher.hashGrid(state));
+    }
+
     //TODO print tree in console/GUI
     //TODO return the optimal action or the next optimal state
     private int minimaxHelper(T state, boolean isMaximizer, int depth){
+
         if(depth == 0 || isTerminal(state)){
             return estimate(state);
         }
 
+        Integer previousValueOfState = checkIfExplored(state);
+        if(previousValueOfState != null){
+            return previousValueOfState;
+        }
+
         if(isMaximizer){
             int maxValue = Integer.MIN_VALUE;
+//            ArrayList<T> nextStates = nextStates(state);
+//            nextStates.sort((T a, T b)->-estimate(a)+estimate(b));
             for(T nextState: nextStates(state)){
                 if(maxValue < minimaxHelper(nextState, false, depth-1)){
                     maxValue = minimaxHelper(nextState, false, depth-1);
                     parentMap.put(state,nextState);
                 }
             }
+            this.explored.put(hasher.hashGrid(state), maxValue);
             return maxValue;
         }else{
             int minValue = Integer.MAX_VALUE;
+//            ArrayList<T> nextStates = nextStates(state);
+//            nextStates.sort((T a, T b)->estimate(a)-estimate(b));
             for(T nextState: nextStates(state)){
                 if(minValue > minimaxHelper(nextState, true, depth-1)){
                     minValue = minimaxHelper(nextState, true, depth-1);
                     parentMap.put(state,nextState);
                 }
             }
+            this.explored.put(hasher.hashGrid(state), minValue);
             return minValue;
         }
     }
@@ -64,9 +87,18 @@ public abstract class Minimax<T> {
         if(depth == 0 || isTerminal(state)){
             return estimate(state);
         }
+
+        Integer previousValueOfState = checkIfExplored(state);
+        if(previousValueOfState != null){
+            return previousValueOfState;
+        }
+
         if(isMaximizer){
 
             int maxVal = Integer.MIN_VALUE;
+
+//            ArrayList<T> nextStates = nextStates(state);
+//            nextStates.sort((T a, T b)->-estimate(a)+estimate(b));
 
             for(T nextState: nextStates(state)){
                 int val = pruningHelper(nextState, false, depth-1, alpha, beta);
@@ -78,9 +110,14 @@ public abstract class Minimax<T> {
 
                 if(alpha >= beta){break;}
             }
+            this.explored.put(hasher.hashGrid(state), maxVal);
             return maxVal;
         }else{
             int minVal = Integer.MAX_VALUE;
+
+//            ArrayList<T> nextStates = nextStates(state);
+//            nextStates.sort((T a, T b)->estimate(a)-estimate(b));
+
             for(T nextState: nextStates(state)){
                 int val = pruningHelper(nextState, true, depth-1, alpha, beta);
                 if(minVal > val){
@@ -90,6 +127,7 @@ public abstract class Minimax<T> {
                 beta = Math.min(beta, val);
                 if(beta <= alpha){break;}
             }
+            this.explored.put(hasher.hashGrid(state), minVal);
             return minVal;
         }
     }

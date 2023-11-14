@@ -3,8 +3,8 @@ import java.util.Scanner;
 
 public class Connect4MiniMax extends Minimax<State>{
 
-    public Connect4MiniMax(int depth, State currentState, boolean isMaximizer){
-        super(depth, currentState, isMaximizer);
+    public Connect4MiniMax(int depth, State currentState, boolean isMaximizer, Hasher hasher){
+        super(depth, currentState, isMaximizer, hasher);
     }
 
     @Override
@@ -161,12 +161,12 @@ public class Connect4MiniMax extends Minimax<State>{
             state.printGrid();
             Connect4MiniMax game ;
             if(state.player==2) {
-                game = new Connect4MiniMax(7, state, true);
+                game = new Connect4MiniMax(7, state, true, Minimax.hasher);
                 System.out.println(game.minimaxWithPruning());
                 state = game.parentMap.get(state);
             }
             else {
-                game = new Connect4MiniMax(7, state, false);
+                game = new Connect4MiniMax(7, state, false, Minimax.hasher);
                 System.out.println(game.minimaxWithPruning());
                 state = game.parentMap.get(state);
             }

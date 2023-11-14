@@ -57,7 +57,7 @@ public class MainFrame {
                     this.withPrunning = prunning.isSelected();
                     Connect4MiniMax game;
 //                    if (this.state.player == 1){
-                        game = new Connect4MiniMax(depth,this.state,!HumanFirst);
+                        game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
                         if(withPrunning){
                             System.out.println("with prunning " + game.minimaxWithPruning());
                         }
@@ -77,7 +77,7 @@ public class MainFrame {
             this.depth = Integer.parseInt(textDepth.getText());
             this.withPrunning = prunning.isSelected();
             Connect4MiniMax game;
-            game = new Connect4MiniMax(depth,this.state,!HumanFirst);
+            game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
             if(withPrunning){
                 System.out.println("with prunning " + game.minimaxWithPruning());
             }
@@ -130,6 +130,7 @@ public class MainFrame {
     }
 
     public static void main(String[] args) {
+        Minimax.hasher = new Connect4Hasher();
         new MainFrame();
 
 //        while (true) {
