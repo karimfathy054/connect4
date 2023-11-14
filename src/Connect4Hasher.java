@@ -2,6 +2,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class Connect4Hasher extends Hasher<State>{
+    long secondTurn;
     public Connect4Hasher(){
         super();
         //initializer
@@ -18,6 +19,7 @@ public class Connect4Hasher extends Hasher<State>{
                 }
             }
         }
+        this.secondTurn = rand.nextLong();
     }
     @Override
     public long hashGrid(State state) {
@@ -30,6 +32,7 @@ public class Connect4Hasher extends Hasher<State>{
                 state.row5,
                 state.row6
         };
+
         //for each row
         for(int i = 0; i < 6; i++){
             //for each slot in row
@@ -38,6 +41,7 @@ public class Connect4Hasher extends Hasher<State>{
                 h ^= this.hash[6*(i)+(j-1)][valueInSlot];
             }
         }
+        if(state.player == 2){h ^= this.secondTurn;}
         return h;
     }
 }
