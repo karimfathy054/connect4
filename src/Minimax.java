@@ -11,6 +11,7 @@ public abstract class Minimax<T> {
     static Hasher hasher;
 
     HashMap<Long, Integer> explored;
+    HashMap<T,ArrayList<T>> tree;
 
 
     public Minimax(int depth, T currentState, boolean isMaximizer, Hasher hasher){
@@ -20,6 +21,7 @@ public abstract class Minimax<T> {
         this.currentState = currentState;
         this.isMaximizer = isMaximizer;
         this.parentMap = new HashMap<>();
+        this.tree=new HashMap<>();
     }
 
     public abstract boolean isTerminal(T state);
@@ -41,7 +43,9 @@ public abstract class Minimax<T> {
     private int minimaxHelper(T state, boolean isMaximizer, int depth){
 
         if(depth == 0 || isTerminal(state)){
-            return estimate(state);
+            int es = estimate(state);
+            this.explored.put(hasher.hashGrid(state),es);
+            return es;
         }
 
         Integer previousValueOfState = checkIfExplored(state);
@@ -53,7 +57,9 @@ public abstract class Minimax<T> {
             int maxValue = Integer.MIN_VALUE;
 //            ArrayList<T> nextStates = nextStates(state);
 //            nextStates.sort((T a, T b)->-estimate(a)+estimate(b));
-            for(T nextState: nextStates(state)){
+            ArrayList<T> nextStates = nextStates(state);
+            tree.put(state,nextStates);
+            for(T nextState: nextStates){
                 if(maxValue < minimaxHelper(nextState, false, depth-1)){
                     maxValue = minimaxHelper(nextState, false, depth-1);
                     parentMap.put(state,nextState);
@@ -65,7 +71,9 @@ public abstract class Minimax<T> {
             int minValue = Integer.MAX_VALUE;
 //            ArrayList<T> nextStates = nextStates(state);
 //            nextStates.sort((T a, T b)->estimate(a)-estimate(b));
-            for(T nextState: nextStates(state)){
+            ArrayList<T> nextStates = nextStates(state);
+            tree.put(state,nextStates);
+            for(T nextState: nextStates){
                 if(minValue > minimaxHelper(nextState, true, depth-1)){
                     minValue = minimaxHelper(nextState, true, depth-1);
                     parentMap.put(state,nextState);
@@ -85,7 +93,9 @@ public abstract class Minimax<T> {
         //beta = value assigned to minimizer
 
         if(depth == 0 || isTerminal(state)){
-            return estimate(state);
+            int es = estimate(state);
+            this.explored.put(hasher.hashGrid(state),es);
+            return es;
         }
 
         Integer previousValueOfState = checkIfExplored(state);
@@ -99,8 +109,9 @@ public abstract class Minimax<T> {
 
 //            ArrayList<T> nextStates = nextStates(state);
 //            nextStates.sort((T a, T b)->-estimate(a)+estimate(b));
-
-            for(T nextState: nextStates(state)){
+            ArrayList<T> nextStates = nextStates(state);
+            tree.put(state,nextStates);
+            for(T nextState: nextStates){
                 int val = pruningHelper(nextState, false, depth-1, alpha, beta);
                 if(maxVal < val){
                     maxVal = val;
@@ -117,8 +128,9 @@ public abstract class Minimax<T> {
 
 //            ArrayList<T> nextStates = nextStates(state);
 //            nextStates.sort((T a, T b)->estimate(a)-estimate(b));
-
-            for(T nextState: nextStates(state)){
+            ArrayList<T> nextStates = nextStates(state);
+            tree.put(state,nextStates);
+            for(T nextState: nextStates){
                 int val = pruningHelper(nextState, true, depth-1, alpha, beta);
                 if(minVal > val){
                     minVal = val;
