@@ -12,14 +12,19 @@ public class Connect4Hasher extends Hasher<State>{
 
         for(int i = 0; i < 42; i++){
             for(int j = 0; j < 3; j++){
-                long val = rand.nextLong();
-                if(!usedValues.contains(val)){
-                    this.hash[i][j] = val;
-                    usedValues.add(val);
-                }
+                long val;
+                do{
+                    val = rand.nextLong();
+                }while(usedValues.contains(val));
+
+                this.hash[i][j] = val;
+                usedValues.add(val);
+
             }
         }
-        this.secondTurn = rand.nextLong();
+        do{
+            this.secondTurn = rand.nextLong();
+        }while(usedValues.contains(this.secondTurn));
     }
     @Override
     public long hashGrid(State state) {

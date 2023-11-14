@@ -49,27 +49,36 @@ public class MainFrame {
             int finalI = i;
             input[i].addActionListener(e -> {
 
+                if(state.getDigit(state.row6, finalI+1) != 0){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Column full!!!!!"
+                    );
+                    return;
+                }
+
                 //call play at row finalI
-                    state.playturn(finalI+1);
-                    state.printGrid();
-                    guiPrint();
-                    this.depth = Integer.parseInt(textDepth.getText());
-                    this.withPrunning = prunning.isSelected();
-                    Connect4MiniMax game;
-//                    if (this.state.player == 1){
-                        game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
-                        if(withPrunning){
-                            System.out.println("with prunning " + game.minimaxWithPruning());
-                        }
-                        else {
-                            System.out.println("without prunning "+game.minimax());
-                        }
-                        this.state = game.parentMap.get(state)!=null? game.parentMap.get(state):this.state;
-                        state.printGrid();
-//                    }
+                state.playturn(finalI+1);
+                state.printGrid();
+                guiPrint();
+                this.depth = Integer.parseInt(textDepth.getText());
+                this.withPrunning = prunning.isSelected();
+                Connect4MiniMax game;
+    //                    if (this.state.player == 1){
+                game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
+                if(withPrunning){
+                    System.out.println("with prunning " + game.minimaxWithPruning());
+                }
+                else {
+                    System.out.println("without prunning "+game.minimax());
+                }
+                this.state = game.parentMap.get(state)!=null? game.parentMap.get(state):this.state;
+
+                state.printGrid();
+    //                    }
                 //read the file and rename
                 guiPrint();
-            });
+        });
             inputs.add(input[i]);
         }
         startAI.addActionListener(e->{
