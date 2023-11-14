@@ -49,14 +49,6 @@ public class MainFrame {
             int finalI = i;
             input[i].addActionListener(e -> {
 
-                if(state.getDigit(state.row6, finalI+1) != 0){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Column full!!!!!"
-                    );
-                    return;
-                }
-
                 //call play at row finalI
                 state.playturn(finalI+1);
                 state.printGrid();
@@ -66,6 +58,32 @@ public class MainFrame {
                 Connect4MiniMax game;
     //                    if (this.state.player == 1){
                 game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
+
+                if(game.isTerminal(state)){
+                    int score = game.estimate(state);
+                    System.out.println(score);
+                    if(score == 10000){
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Player 1 wins!!!"
+                        );
+                    }else if(score == -10000){
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Player 2 wins!!!"
+                        );
+                    }
+                    return;
+                }
+
+                if(state.getDigit(state.row6, finalI+1) != 0){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Column full!!!!!"
+                    );
+                    return;
+                }
+
                 if(withPrunning){
                     System.out.println("with prunning " + game.minimaxWithPruning());
                 }
