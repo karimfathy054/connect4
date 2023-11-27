@@ -131,7 +131,6 @@ public class State implements Cloneable {
                 score += scoreHelper(arr,n,player);
             }
         }
-
         for(int i=1 ; i<=7 ; i++){
             for(int j=0 ; j<=2 ; j++){
                 int l=j,k=0;
