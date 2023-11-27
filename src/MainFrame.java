@@ -54,15 +54,9 @@ public class MainFrame {
             input[i] = new JButton("row"+(i+1));
             int finalI = i;
             input[i].addActionListener(e -> {
-
-                //call play at row finalI
-                state.playturn(finalI+1);
-                state.printGrid();
-                guiPrint();
                 this.depth = Integer.parseInt(textDepth.getText());
                 this.withPrunning = prunning.isSelected();
                 Connect4MiniMax game;
-    //                    if (this.state.player == 1){
                 game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
 
                 if(game.isTerminal(state)){
@@ -81,7 +75,6 @@ public class MainFrame {
                     }
                     return;
                 }
-
                 if(state.getDigit(state.row6, finalI+1) != 0){
                     JOptionPane.showMessageDialog(
                             null,
@@ -89,13 +82,30 @@ public class MainFrame {
                     );
                     return;
                 }
+                //call play at row finalI
+                state.playturn(finalI+1);
+                state.printGrid();
+                guiPrint();
 
+
+
+                long startTime = System.nanoTime();
                 if(withPrunning){
                     System.out.println("with prunning " + game.minimaxWithPruning());
                 }
                 else {
                     System.out.println("without prunning "+game.minimax());
                 }
+                long endTime = System.nanoTime();
+                double time = (double)(endTime-startTime) / (double)1000000;
+//                JOptionPane.showMessageDialog(
+//                        null,
+//                        "Time = " + time+"\n"+
+//                        "Nodes expanded = " + game.explored.size()
+//                );
+
+
+
                 if(this.treeDemo != null){
                     this.treeDemo.dispose();
                 }
