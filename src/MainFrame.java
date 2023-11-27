@@ -98,11 +98,11 @@ public class MainFrame {
                 }
                 long endTime = System.nanoTime();
                 double time = (double)(endTime-startTime) / (double)1000000;
-//                JOptionPane.showMessageDialog(
-//                        null,
-//                        "Time = " + time+"\n"+
-//                        "Nodes expanded = " + game.explored.size()
-//                );
+               JOptionPane.showMessageDialog(
+                       null,
+                       "Time = " + time+"\n"+
+                       "Nodes expanded = " + game.explored.size()
+               );
 
 
 
