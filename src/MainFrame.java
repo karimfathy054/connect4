@@ -96,7 +96,16 @@ public class MainFrame {
     }
 
     private void playColumnAsHuman(int finalI) {
-        state.playturn(finalI +1);
+        boolean valid = state.playturn(finalI +1);
+        if(!valid){
+            if(state.getDigit(state.row6, finalI +1) != 0){
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Column full!!!!!"
+                );
+                return;
+            }
+        }
         state.printGrid();
         guiPrint();
         this.depth = Integer.parseInt(textDepth.getText());
@@ -107,13 +116,7 @@ public class MainFrame {
             displayWinner(game);
             return;
         }
-        if(state.getDigit(state.row6, finalI +1) != 0){
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Column full!!!!!"
-            );
-            return;
-        }
+
         if(withPrunning){
             System.out.println("with prunning " + game.minimaxWithPruning());
         }
