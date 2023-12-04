@@ -16,6 +16,8 @@ public class State implements Cloneable {
 
     int player = 1;//1 for human ,2 for AI
 
+    public int lastColumnPlayed;
+
     public State() {
         this.row1 = 0;
         this.row2 = 0;
@@ -27,9 +29,69 @@ public class State implements Cloneable {
     }
 
 
+    public int getSpecialScore(int n){
+        int[] rows = {row1,row2,row3,row4,row5,row6};
+        int score=0;
+        for(int i=0 ; i<6 ; i++){
+            for(int j=1 ; j<=4 ; j++){
+                int l=j,k=0;
+                int[] arr = new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[i],l);
+                    l++;
+                }
+                score += scoreHelper(arr,n,2);
+                score -= scoreHelper(arr,n,1);
+            }
+        }
+        for(int i=1 ; i<=7 ; i++){
+            for(int j=0 ; j<=2 ; j++){
+                int l=j,k=0;
+                int[] arr =new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[l],i);
+                    l++;
+                }
+                score += scoreHelper(arr,n,2);
+                score -= scoreHelper(arr,n,1);
+            }
+        }
+
+        for(int i=5 ; i>=3 ; i--){
+            for(int j=1 ; j<=4 ; j++){
+                int  l=i , r=j,k=0;
+                int[] arr =new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[l],r);
+                    l--;
+                    r++;
+                }
+                score += scoreHelper(arr,n,2);
+                score -= scoreHelper(arr,n,1);
+            }
+        }
+
+        for(int i=5 ; i>=3 ; i--){
+            for(int j=7 ; j>=4 ; j--){
+                int l=i,r=j,k=0;
+                int[] arr=new int[4];
+                while(k<4){
+                    arr[k++] = getDigit(rows[l],r);
+                    l--;
+                    r--;
+                }
+                score += scoreHelper(arr,n,2);
+                score -= scoreHelper(arr,n,1);
+            }
+        }
+
+        return score;
+    }
+
     boolean playturn(int col){
 
         if(getDigit(row6,col)!=0) return  false;
+        lastColumnPlayed = col;
         if(getDigit(row1,col) ==0){
             row1 = setDigit(row1,col,player);
             player=player == 1?2:1;
@@ -56,6 +118,7 @@ public class State implements Cloneable {
             player=player == 1?2:1;
             return true;
         }
+
         return true;
     }
 
@@ -180,7 +243,7 @@ public class State implements Cloneable {
             int[] rows = {row1,row2,row3,row4,row5,row6};
             for(int i=5 ; i>=0 ; i--){
                 for(int j=1 ; j<=7 ; j++){
-                 bw.write(getDigit(rows[i],j) +" ");
+                 bw.write(((getDigit(rows[i],j)==0)?0:(getDigit(rows[i],j)==1)?2:1) +" ");
                 }
                 bw.newLine();
             }

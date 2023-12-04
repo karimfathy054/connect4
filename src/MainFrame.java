@@ -35,10 +35,14 @@ public class MainFrame {
 
     static JCheckBox prunning = new JCheckBox();
 
+    static JLabel scoreLabel = new JLabel();
+
     TreeDemo treeDemo ;
 
     public MainFrame() {
         this.state = new State();
+
+        scoreLabel.setText("Start");
 
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[0].length; j++) {
@@ -58,7 +62,6 @@ public class MainFrame {
                 this.withPrunning = prunning.isSelected();
                 Connect4MiniMax game;
                 game = new Connect4MiniMax(depth,this.state,!HumanFirst, Minimax.hasher);
-
                 if(game.isTerminal(state)){
                     int score = game.estimate(state);
                     System.out.println(score);
@@ -73,6 +76,7 @@ public class MainFrame {
                                 "Player 2 wins!!!"
                         );
                     }
+
                     return;
                 }
                 if(state.getDigit(state.row6, finalI+1) != 0){
@@ -86,6 +90,10 @@ public class MainFrame {
                 state.playturn(finalI+1);
                 state.printGrid();
                 guiPrint();
+                scoreLabel.setText(
+                        "P1: "+game.getFinalScore(state, 1)
+                        +"  P2: "+game.getFinalScore(state, 2)
+                );
 
 
 
@@ -109,10 +117,16 @@ public class MainFrame {
                 if(this.treeDemo != null){
                     this.treeDemo.dispose();
                 }
-                this.treeDemo = new TreeDemo(game.tree,game.explored,Minimax.hasher,this.state);
+//                if(this.depth <=4) {
+                    this.treeDemo = new TreeDemo(game.tree, game.explored, Minimax.hasher, this.state);
+//                }
                 this.state = game.parentMap.get(state)!=null? game.parentMap.get(state):this.state;
                 state.printGrid();
                 guiPrint();
+                scoreLabel.setText(
+                        "P1: "+game.getFinalScore(state, 1)
+                                +"  P2: "+game.getFinalScore(state, 2)
+                );
         });
             inputs.add(input[i]);
         }
@@ -131,12 +145,19 @@ public class MainFrame {
             this.state = game.parentMap.get(state);
             state.printGrid();
             guiPrint();
+            this.treeDemo = new TreeDemo(game.tree, game.explored, Minimax.hasher, this.state);
+            scoreLabel.setText(
+                    "P1: "+game.getFinalScore(state, 1)
+                            +"  P2: "+game.getFinalScore(state, 2)
+            );
         });
         jj.setLayout(new BoxLayout(jj,BoxLayout.Y_AXIS));
         jj.add(startAI);
         jj.add(textDepth);
+        jj.add(scoreLabel);
         jj.add(new JLabel("with Prunning:"));
         jj.add(prunning);
+
         textDepth.setBackground(Color.CYAN);
         frame.setLayout(new BorderLayout());
 //        frame.add(textDepth,BorderLayout.NORTH);
@@ -144,6 +165,7 @@ public class MainFrame {
         frame.add(board,BorderLayout.CENTER);
         frame.add(inputs,BorderLayout.SOUTH);
         frame.add(jj,BorderLayout.EAST);
+
         frame.setSize(600,600);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

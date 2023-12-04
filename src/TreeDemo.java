@@ -22,7 +22,9 @@ public class TreeDemo extends JFrame {
     public TreeDemo(HashMap<State, ArrayList<State>> treeMap, HashMap<Long, Integer> explored, Hasher hasher, State state) {
         // Create the root node and child nodes for the tree
         HashMap<DefaultMutableTreeNode,State> nodeMap = new HashMap<>();
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(explored.get(hasher.hashGrid(state)));
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(
+                explored.get(hasher.hashGrid(state))
+        );
         Stack<Pair> stack = new Stack<>();
         stack.push(new Pair(state,rootNode));
         nodeMap.put(rootNode,state);
@@ -31,7 +33,11 @@ public class TreeDemo extends JFrame {
             if(treeMap.get(current.state) ==null)
                 continue;
             for(State s : treeMap.get(current.state)){
-                DefaultMutableTreeNode node = new DefaultMutableTreeNode(explored.get(hasher.hashGrid(s)));
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode(
+                        explored.get(hasher.hashGrid(s))
+                                +"----player"+((s.player==2)? "-blue":"-red")
+                                +" at col "+ s.lastColumnPlayed
+                );
                 current.Node.add(node);
                 nodeMap.put(node,s);
                 stack.push(new Pair(s,node));

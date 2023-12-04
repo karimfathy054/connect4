@@ -20,11 +20,16 @@ public class Connect4MiniMax extends Minimax<State>{
         if(cnt==42) return true;
         return false;
     }
+
+    public int getFinalScore(State state, int player){
+        return state.getScore(4, player);
+    }
     private int CenterDisc(State state,int player,int position){
         int[] rows = {state.row1,state.row2,state.row3,state.row4,state.row5,state.row6};
         int score=0;
         for(int i=0 ; i<6 ; i++){
-            if(state.getDigit(rows[i],position)==player)score++;
+            if(state.getDigit(rows[i],position)==2)score++;
+            if(state.getDigit(rows[i],position)==1)score--;
         }
         return score;
     }
@@ -46,12 +51,12 @@ public class Connect4MiniMax extends Minimax<State>{
         return score;
     }
 
-    private int EmptySpaces(State state,int player){
+    private int EmptySpaces(State state){
         int score=0;
         int[] rows = {state.row1,state.row2,state.row3,state.row4,state.row5,state.row6};
         for(int i=0 ; i<6 ; i++){
             for(int j=1 ; j<=7 ; j++){
-                if(state.getDigit(rows[i],j)==player) {
+                if(state.getDigit(rows[i],j)==2) {
                     if (j < 7 && state.getDigit(rows[i], j + 1) == 0) score++;
                     if (j > 1 && state.getDigit(rows[i], j - 1) == 0) score++;
                     if (i < 5 && state.getDigit(rows[i+1], j) == 0) score++;
@@ -60,6 +65,15 @@ public class Connect4MiniMax extends Minimax<State>{
                     if (j > 1 && i > 0 && state.getDigit(rows[i - 1], j - 1) == 0) score++;
                     if (j > 1 && i < 5 && state.getDigit(rows[i + 1], j - 1) == 0) score++;
                     if (j < 7 && i > 0 && state.getDigit(rows[i - 1], j + 1) == 0) score++;
+                }else if(state.getDigit(rows[i],j)==1) {
+                    if (j < 7 && state.getDigit(rows[i], j + 1) == 0) score--;
+                    if (j > 1 && state.getDigit(rows[i], j - 1) == 0) score--;
+                    if (i < 5 && state.getDigit(rows[i+1], j) == 0) score--;
+                    if (i > 0 && state.getDigit(rows[i-1], j) == 0) score--;
+                    if (j < 7 && i < 5 && state.getDigit(rows[i + 1], j + 1) == 0) score--;
+                    if (j > 1 && i > 0 && state.getDigit(rows[i - 1], j - 1) == 0) score--;
+                    if (j > 1 && i < 5 && state.getDigit(rows[i + 1], j - 1) == 0) score--;
+                    if (j < 7 && i > 0 && state.getDigit(rows[i - 1], j + 1) == 0) score--;
                 }
             }
         }
@@ -75,51 +89,50 @@ public class Connect4MiniMax extends Minimax<State>{
         }
         //score , 3-->4 , 2-->4
         // Number of Player's Fours (Potential Wins): +1000 points for each possible winning move.
-        heuristic += (state.getScore(4,2)*1000);
-
         // Number of Opponent's Fours (Blocking): -1000 points for each potential winning move by the opponent.
-        heuristic -= (state.getScore(4,1)*1000);
+        heuristic += (state.getSpecialScore(4)*1000);
+//        heuristic -= (state.getScore(4,1)*1000);
 
         // Number of Player's Threes: +100 points for each three-in-a-row.
         // Open Two-Way Threes: +200 points for each open-ended three-in-a-row.
-        heuristic += (state.getScore(3,2)*500);
+        heuristic += (state.getSpecialScore(3)*500);
 
         // Number of Opponent's Threes: -100 points for each opponent's three-in-a-row.
         // Opponent's Open Two-Way Threes: -200 points for each open-ended three-in-a-row.
-        heuristic -= (state.getScore(3,1)*500);
+//        heuristic -= (state.getScore(3,1)*500);
 
 
         // 0 1 1 1 0 0 --> 200
         // 0 1 1 1 2 0 --> 100
-        // Number of Player's Threes: +100 points for each three-in-a-row.
-        // Open Two-Way Threes: +100 points for each open-ended three-in-a-row.
-        heuristic += (state.getScore(2,2)*100);
+        // Number of Player's Two: +100 points for each three-in-a-row.
+        // Open Two-Way two: +100 points for each open-ended three-in-a-row.
+        heuristic += (state.getSpecialScore(2)*100);
 
-        // Number of Player's Threes: -100 points for each three-in-a-row.
-        // Open Two-Way Threes: -100 points for each open-ended three-in-a-row.
-        heuristic -= (state.getScore(2,1)*100);
+        // Number of Player's Two: -100 points for each three-in-a-row.
+        // Open Two-Way Two: -100 points for each open-ended three-in-a-row.
+//        heuristic -= (state.getScore(2,1)*100);
 
         // Center Control: +50 points for each disc in the center column.
         heuristic += (CenterDisc(state,2,4)*50);
 
         // Opponent's Center Control: -50 points for each disc in the center column.
-        heuristic -= (CenterDisc(state,1,4)*50);
+//        heuristic -= (CenterDisc(state,1,4)*50);
 
         // Center Control: +40 points for each disc in 3 , 5 column.
         heuristic += (CenterDisc(state,2,5)*40);
         heuristic += (CenterDisc(state,2,3)*40);
 
         // Opponent's Center Control: -40 points for each disc in 3 , 5 column.
-        heuristic -= (CenterDisc(state,1,5)*40);
-        heuristic -= (CenterDisc(state,1,3)*40);
+//        heuristic -= (CenterDisc(state,1,5)*40);
+//        heuristic -= (CenterDisc(state,1,3)*40);
 
         // Edge Control: +30 points for each disc in the outer columns.
         heuristic += (CenterDisc(state,2,1)*30);
         heuristic += (CenterDisc(state,2,7)*30);
 
         // Opponent's Edge Control: -30 points for each disc in the outer columns.
-        heuristic -= (CenterDisc(state,1,1)*30);
-        heuristic -= (CenterDisc(state,1,7)*30);
+//        heuristic -= (CenterDisc(state,1,1)*30);
+//        heuristic -= (CenterDisc(state,1,7)*30);
 
         // Blocked Two-Way Threes: -50 points for each blocked two-way three. (Dropped)
         // 0 2 1 1 1 2 0 --> -50 +100 = +50 / 0
@@ -131,14 +144,14 @@ public class Connect4MiniMax extends Minimax<State>{
         // Opponent's Vertical Stacks: -20 points for each consecutive pair of discs in a column.
         heuristic -= (VerticalStack(state,1)*20);
 
-        // Empty Spaces Near Existing Discs: +10 points for each empty space adjacent to a player's disc.
-        // 0 0 0 0 0 0 0
-        // 0 0 0 2 0 0 0
-        // 0 0 1 1 1 0 0
-        heuristic += (EmptySpaces(state,2)*10);
+//         Empty Spaces Near Existing Discs: +10 points for each empty space adjacent to a player's disc.
+//         0 0 0 0 0 0 0
+//         0 0 0 2 0 0 0
+//         0 0 1 1 1 0 0
+        heuristic += (EmptySpaces(state)*10);
 
         // Empty Spaces Near Existing Discs: +10 points for each empty space adjacent to a player's disc.
-        heuristic -= (EmptySpaces(state,1)*10);
+//        heuristic -= (EmptySpaces(state,1)*10);
 
 
         return heuristic;
