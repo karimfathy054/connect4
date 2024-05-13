@@ -1,6 +1,4 @@
-# connect4
-
-# Connect 4 with AI Agent Readme
+# Connect 4 with AI Agent
 **Introduction**
 This project implements the classic game Connect 4 with an AI agent capable of making strategic moves using the Minimax algorithm with and without alpha-beta pruning. Connect 4 is a two-player connection game in which the players choose a color and then take turns dropping colored discs into a grid. The objective of the game is to be the first to form a horizontal, vertical, or diagonal line of four of one's own discs.
 
