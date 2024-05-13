@@ -35,3 +35,8 @@ Data Structures: Various data structures are employed in the implementation incl
 
 # Conclusion
 This Connect 4 project with an AI agent demonstrates the implementation of Minimax and Minimax with alpha-beta pruning algorithms for decision-making in a game scenario. The use of heuristic evaluation functions and efficient data structures enhances the performance and strategic capabilities of the AI agent, making it a challenging opponent for players.
+
+# Contributors
+[Omar Mahmoud](https://github.com/OmarMahmoud11)
+[Karim Fathy](https://github.com/karimfathy054)
+[Mohamed Amr](https://github.com/MohamedAmr982)
